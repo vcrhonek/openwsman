@@ -76,8 +76,10 @@ static int use_ipv6 = 0;
 #endif
 static int use_digest = 0;
 static char *ssl_key_file = NULL;
+static char *ssl_key_fallback_file = NULL;
 static char *service_path = DEFAULT_SERVICE_PATH;
 static char *ssl_cert_file = NULL;
+static char *ssl_cert_fallback_file = NULL;
 static char *ssl_disabled_protocols = NULL;
 static char *ssl_cipher_list = NULL;
 static char *pid_file = DEFAULT_PID_PATH;
@@ -186,7 +188,9 @@ int wsmand_read_config(dictionary * ini)
 	service_path =
 	    iniparser_getstring(ini, "server:service_path", "/wsman");
 	ssl_key_file = iniparser_getstr(ini, "server:ssl_key_file");
+	ssl_key_fallback_file = iniparser_getstr(ini, "server:ssl_key_fallback_file");
 	ssl_cert_file = iniparser_getstr(ini, "server:ssl_cert_file");
+	ssl_cert_fallback_file = iniparser_getstr(ini, "server:ssl_cert_fallback_file");
         ssl_disabled_protocols = iniparser_getstr(ini, "server:ssl_disabled_protocols");
         ssl_cipher_list = iniparser_getstr(ini, "server:ssl_cipher_list");
 	use_ipv4 = iniparser_getboolean(ini, "server:ipv4", 1);
@@ -362,6 +366,16 @@ char *wsmand_options_get_ssl_key_file(void)
 char *wsmand_options_get_ssl_cert_file(void)
 {
 	return ssl_cert_file;
+}
+
+char *wsmand_options_get_ssl_key_fallback_file(void)
+{
+	return ssl_key_fallback_file;
+}
+
+char *wsmand_options_get_ssl_cert_fallback_file(void)
+{
+	return ssl_cert_fallback_file;
 }
 
 char *wsmand_options_get_ssl_disabled_protocols(void)

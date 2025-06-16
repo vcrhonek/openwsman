@@ -1508,7 +1508,6 @@ set_ssl(struct shttpd_ctx *ctx, const char *pem)
 	char *ssl_disabled_protocols = wsmand_options_get_ssl_disabled_protocols();
 	char *ssl_cipher_list = wsmand_options_get_ssl_cipher_list();
 	int		retval = FALSE;
-	EC_KEY*		key;
 
 	/* Load SSL library dynamically */
 	if ((lib = dlopen(SSL_LIB, RTLD_LAZY)) == NULL) {
@@ -1539,11 +1538,15 @@ set_ssl(struct shttpd_ctx *ctx, const char *pem)
 	else
 		retval = TRUE;
 
-	/* This enables ECDH Perfect Forward secrecy. Currently with just the most generic p256 prime curve */
-	key = EC_KEY_new_by_curve_name(NID_X9_62_prime256v1);
-	if (key != NULL) {
-		SSL_CTX_set_tmp_ecdh(CTX, key);
-		EC_KEY_free(key);
+	/* Add fall back certificate/key pair */
+	if (wsmand_options_get_ssl_cert_fallback_file() &&
+                    wsmand_options_get_ssl_key_fallback_file()) {
+		if (SSL_CTX_use_certificate_file(CTX, wsmand_options_get_ssl_cert_fallback_file(), SSL_FILETYPE_PEM) != 1)
+			_shttpd_elog(E_LOG, NULL, "cannot open certificate fallback file %s", pem);
+		else if (SSL_CTX_use_PrivateKey_file(CTX, wsmand_options_get_ssl_key_fallback_file(), SSL_FILETYPE_PEM) != 1)
+			_shttpd_elog(E_LOG, NULL, "cannot open fallback PrivateKey %s", pem);
+		else
+			retval = TRUE;
 	}
 
 	while (ssl_disabled_protocols) {
