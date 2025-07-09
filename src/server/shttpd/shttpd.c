@@ -1542,9 +1542,9 @@ set_ssl(struct shttpd_ctx *ctx, const char *pem)
 	if (wsmand_options_get_ssl_cert_fallback_file() &&
                     wsmand_options_get_ssl_key_fallback_file()) {
 		if (SSL_CTX_use_certificate_file(CTX, wsmand_options_get_ssl_cert_fallback_file(), SSL_FILETYPE_PEM) != 1)
-			_shttpd_elog(E_LOG, NULL, "cannot open certificate fallback file %s", pem);
+			_shttpd_report_ssl_error("cannot open certificate fallback file", wsmand_options_get_ssl_cert_fallback_file());
 		else if (SSL_CTX_use_PrivateKey_file(CTX, wsmand_options_get_ssl_key_fallback_file(), SSL_FILETYPE_PEM) != 1)
-			_shttpd_elog(E_LOG, NULL, "cannot open fallback PrivateKey %s", pem);
+			_shttpd_report_ssl_error("cannot open fallback PrivateKey", wsmand_options_get_ssl_key_fallback_file());
 		else
 			retval = TRUE;
 	}
