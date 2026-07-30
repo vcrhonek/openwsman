@@ -102,10 +102,10 @@ auth_request_callback( WsManClient *client, wsman_auth_type_t t, char **username
     }
     puser = PyTuple_GetItem(prv, 0); 
     ppass = PyTuple_GetItem(prv, 0); 
-    if (PyString_Check(puser) && PyString_Check(ppass))
+    if (PyBytes_Check(puser) && PyBytes_Check(ppass))
     {
-        *username = strdup(PyString_AsString(puser));
-        *password = strdup(PyString_AsString(ppass));
+        *username = strdup(PyBytes_AsString(puser));
+        *password = strdup(PyBytes_AsString(ppass));
     }
 
 cleanup:

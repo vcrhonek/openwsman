@@ -106,10 +106,10 @@ get_exc_trace()
     if (obstr==NULL) 
         TB_ERROR("getvalue() failed.");
 
-    if (!PyString_Check(obstr))
+    if (!PyBytes_Check(obstr))
         TB_ERROR("getvalue() did not return a string");
 
-    debug("%s", PyString_AsString(obstr)); 
+    debug("%s", PyBytes_AsString(obstr));
     args = PyTuple_New(2);
     PyTuple_SetItem(args, 0, string2target("\n")); 
     PyTuple_SetItem(args, 1, string2target("<br>")); 
@@ -118,7 +118,7 @@ get_exc_trace()
     //newstr = PyObject_CallMethod(obstr, "replace", args); 
     newstr = PyObject_CallObject(func, args); 
 
-    tbstr = PyString_AsString(newstr); 
+    tbstr = PyBytes_AsString(newstr);
 
     rv = fmtstr("plugin:%s", tbstr); 
 
@@ -260,7 +260,7 @@ TargetCall(WsXmlDocH doc, PyObject* instance,
         detail = PyTuple_GetItem(result, 1); 
     }
 
-    if (! PyInt_Check(code) || (! PyInt_Check(detail) && detail != Py_None))
+    if (! PyLong_Check(code) || (! PyLong_Check(detail) && detail != Py_None))
     {
         TARGET_THREAD_BEGIN_ALLOW;
         status.fault_msg = fmtstr("Python function \"%s\" didn't return a {<int>, <int>) two-tuple", opname); 
@@ -269,7 +269,7 @@ TargetCall(WsXmlDocH doc, PyObject* instance,
         TARGET_THREAD_END_ALLOW; 
         goto cleanup; 
     }
-    status.fault_code = PyInt_AsLong(code); 
+    status.fault_code = PyLong_AsLong(code);
     if (detail == Py_None)
     {
 	status.fault_code = WSMAN_INTERNAL_ERROR;
@@ -277,7 +277,7 @@ TargetCall(WsXmlDocH doc, PyObject* instance,
     }
     else
     {
-        status.fault_detail_code = PyInt_AsLong(detail);
+        status.fault_detail_code = PyLong_AsLong(detail);
     }
 cleanup:
     if (status.fault_code != WSMAN_RC_OK)
@@ -467,8 +467,8 @@ TargetEndpoints( void *self, void *data )
       }
       ns = PyTuple_GetItem(elem, 0);
       prefix = PyTuple_GetItem(elem, 1);
-      if (!PyString_Check(ns)
-	  || !PyString_Check(prefix)) {
+      if (!PyBytes_Check(ns)
+	  || !PyBytes_Check(prefix)) {
         TARGET_THREAD_BEGIN_ALLOW;
         debug("Python function \"namespaces\" didn't return a list of [<string>,<string>] tuples");
 	status.fault_code = WSA_ENDPOINT_UNAVAILABLE;
@@ -478,8 +478,8 @@ TargetEndpoints( void *self, void *data )
       }
       
       WsSupportedNamespaces *sup_ns = (WsSupportedNamespaces *)u_malloc(sizeof(WsSupportedNamespaces));
-      sup_ns->ns = PyString_AsString(ns);
-      sup_ns->class_prefix = PyString_AsString(prefix);
+      sup_ns->ns = PyBytes_AsString(ns);
+      sup_ns->class_prefix = PyBytes_AsString(prefix);
       node = lnode_create(ns);
       list_append(namespaces, node);
     }

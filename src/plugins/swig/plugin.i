@@ -76,9 +76,9 @@
 #define Target_Void Py_None
 typedef PyObject * Target_Type;
 #define Target_Bool(x) PyBool_FromLong(x)
-#define Target_WChar(x) PyInt_FromLong(x)
-#define Target_Int(x) PyInt_FromLong(x)
-#define Target_String(x) PyString_FromString(x)
+#define Target_WChar(x) PyLong_FromLong(x)
+#define Target_Int(x) PyLong_FromLong(x)
+#define Target_String(x) PyUnicode_FromString(x)
 #define Target_Real(x) Py_None
 #define Target_Array() PyList_New(0)
 #define Target_SizedArray(len) PyList_New(len)
